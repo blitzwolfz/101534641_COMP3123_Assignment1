@@ -13,6 +13,7 @@ A RESTful API built with Node.js, Express, and MongoDB for user and employee man
 
 - User signup and login with JWT authentication
 - Password hashing with bcrypt
+- **JWT-protected Employee routes** (All employee endpoints require authentication)
 - Employee CRUD operations
 - Input validation using express-validator
 - Proper HTTP status codes
@@ -37,7 +38,7 @@ A RESTful API built with Node.js, Express, and MongoDB for user and employee man
 │   └── Employee.js          # Employee schema
 ├── routes/
 │   ├── userRoutes.js        # User API routes
-│   └── employeeRoutes.js    # Employee API routes
+│   └── employeeRoutes.js    # Employee API routes (JWT protected)
 ├── .env                     # Environment variables
 ├── .gitignore              
 ├── docker-compose.yml       # Docker services configuration
@@ -118,22 +119,24 @@ npm run dev
 
 ## 🔗 API Endpoints
 
-### User Routes (Base: `/api/v1/user`)
+### User Routes (Base: `/api/v1/user`) - Public
 
-| Method | Endpoint | Description | Status Code |
-|--------|----------|-------------|-------------|
-| POST | `/signup` | Create a new user | 201 |
-| POST | `/login` | User login | 200 |
+| Method | Endpoint | Description | Status Code | Auth Required |
+|--------|----------|-------------|-------------|---------------|
+| POST | `/signup` | Create a new user | 201 | No |
+| POST | `/login` | User login | 200 | No |
 
-### Employee Routes (Base: `/api/v1/emp`)
+### Employee Routes (Base: `/api/v1/emp`) - Protected 🔒
 
-| Method | Endpoint | Description | Status Code |
-|--------|----------|-------------|-------------|
-| GET | `/employees` | Get all employees | 200 |
-| POST | `/employees` | Create a new employee | 201 |
-| GET | `/employees/:eid` | Get employee by ID | 200 |
-| PUT | `/employees/:eid` | Update employee by ID | 200 |
-| DELETE | `/employees?eid=xxx` | Delete employee by ID | 204 |
+⚠️ **All employee routes require JWT authentication**
+
+| Method | Endpoint | Description | Status Code | Auth Required |
+|--------|----------|-------------|-------------|---------------|
+| GET | `/employees` | Get all employees | 200 | Yes 🔒 |
+| POST | `/employees` | Create a new employee | 201 | Yes 🔒 |
+| GET | `/employees/:eid` | Get employee by ID | 200 | Yes 🔒 |
+| PUT | `/employees/:eid` | Update employee by ID | 200 | Yes 🔒 |
+| DELETE | `/employees?eid=xxx` | Delete employee by ID | 204 | Yes 🔒 |
 
 ## 📝 Sample API Requests
 
@@ -176,10 +179,11 @@ Content-Type: application/json
 }
 ```
 
-### 3. Create Employee
+### 3. Create Employee (JWT Required)
 ```http
 POST /api/v1/emp/employees
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 {
   "first_name": "Alice",
@@ -200,9 +204,10 @@ Content-Type: application/json
 }
 ```
 
-### 4. Get All Employees
+### 4. Get All Employees (JWT Required)
 ```http
 GET /api/v1/emp/employees
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Response (200)**:
@@ -221,10 +226,11 @@ GET /api/v1/emp/employees
 ]
 ```
 
-### 5. Update Employee
+### 5. Update Employee (JWT Required)
 ```http
 PUT /api/v1/emp/employees/64c9e5a3d9f3c1a5c9b4e8a4
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 {
   "position": "Senior Designer",
@@ -239,37 +245,95 @@ Content-Type: application/json
 }
 ```
 
-### 6. Delete Employee
+### 6. Delete Employee (JWT Required)
 ```http
 DELETE /api/v1/emp/employees?eid=64c9e5a3d9f3c1a5c9b4e8a4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Response (204)**: No content
 
-## 🔐 JWT Authentication (Optional)
+## 🔐 JWT Authentication
 
-To protect employee routes with JWT authentication:
+### How it Works:
 
-1. Uncomment the import line in `routes/employeeRoutes.js`:
-```javascript
-const verifyToken = require('../middleware/auth');
+1. **Signup**: Create a user account
+2. **Login**: Get a JWT token (valid for 24 hours)
+3. **Use Token**: Include token in Authorization header for all employee endpoints
+
+### Authorization Header Format:
 ```
-
-2. Add `verifyToken` middleware to routes you want to protect:
-```javascript
-router.get('/employees', verifyToken, getAllEmployees);
-```
-
-3. Include the JWT token in requests:
-```http
 Authorization: Bearer <your-jwt-token>
+```
+
+### Error Responses:
+
+**No Token Provided (401)**:
+```json
+{
+  "status": false,
+  "message": "Access denied. No token provided."
+}
+```
+
+**Invalid Token (401)**:
+```json
+{
+  "status": false,
+  "message": "Invalid token"
+}
+```
+
+**Token Expired (401)**:
+```json
+{
+  "status": false,
+  "message": "Token expired"
+}
 ```
 
 ## 🧪 Testing
 
-1. Import the Postman collection (101534641_COMP3123_Assignment1.postman_collection.json)
-2. Set the base URL to `http://localhost:3000`
-3. Test each endpoint and verify the responses match the expected status codes
+### Postman Collection
+
+Import the **101534641_COMP3123_Assignment1.postman_collection.json** file into Postman.
+
+**What's included:**
+- ✅ All 7 required API endpoints
+- ✅ Automated tests for each endpoint
+- ✅ JWT authentication with automatic token usage
+- ✅ Status code validation
+- ✅ Response structure validation
+- ✅ Error handling tests
+- ✅ Collection variables for dynamic testing
+- ✅ Response time checks
+
+**How to use:**
+1. Import the collection into Postman
+2. Ensure the API is running at `http://localhost:3000`
+3. **Important**: Run requests in order:
+   - First run "Signup" to create a user
+   - Then run "Login" to get JWT token (auto-saved to collection variable)
+   - All employee requests will automatically use the saved token
+4. Or use the Collection Runner to run all tests in sequence
+
+**Collection Variables:**
+- `base_url`: http://localhost:3000
+- `employee_id`: Auto-populated from Create Employee response
+- `user_id`: Auto-populated from Signup response
+- `jwt_token`: Auto-populated from Login response and auto-used in employee requests
+
+**Test Execution Order:**
+1. Health Check
+2. User Signup (get user_id)
+3. User Login (get jwt_token) **← Token saved automatically**
+4. Create Employee (uses jwt_token) 🔒
+5. Get All Employees (uses jwt_token) 🔒
+6. Get Employee by ID (uses jwt_token) 🔒
+7. Update Employee (uses jwt_token) 🔒
+8. Delete Employee (uses jwt_token) 🔒
+
+Each request includes automated tests that verify the correct status codes and response structure.
 
 ## 🐳 Docker Commands
 
@@ -317,6 +381,43 @@ Access Mongo Express at http://localhost:8081 to view and manage your MongoDB da
 - Login accepts either `username` OR `email` with password
 - All requests and responses are in JSON format
 - Proper HTTP status codes are returned for all endpoints
+- **All employee endpoints require JWT authentication**
+- JWT tokens expire after 24 hours
+- Include JWT token in `Authorization: Bearer <token>` header for employee endpoints
+
+## 📦 Submission Checklist
+
+Before submitting, ensure you have:
+
+✅ **GitHub Repository**: `101534641_COMP3123_Assignment1`
+- All code committed with meaningful commit messages
+- README.md with setup instructions
+
+✅ **Project Files (ZIP)**:
+- All source code
+- Dockerfile and docker-compose.yml
+- package.json
+- README.md
+- `.env` file (update JWT_SECRET for production)
+- **NO node_modules folder**
+
+✅ **Postman Collection**: 
+- `101534641_COMP3123_Assignment1.postman_collection.json`
+- Includes all 7 endpoints with automated tests
+- JWT token automatically managed
+
+✅ **Screenshots**:
+- MongoDB database in Mongo Express showing collections
+- All Postman requests with successful responses (200, 201, 204)
+- JWT token being used in Authorization header
+- Error cases (400, 401, 404) if requested
+
+✅ **Sample Credentials**:
+- Username: johndoe
+- Email: johndoe@example.com  
+- Password: password123
+
+✅ **Notes/Comments**: Mention that JWT authentication is fully implemented
 
 ## 📄 License
 
@@ -325,3 +426,18 @@ This project is for educational purposes only.
 ## 👤 Author
 
 Student Number: 101534641
+
+## 📚 Assignment Requirements Met
+
+- ✅ RESTful API with Node.js and Express
+- ✅ MongoDB integration with proper schemas
+- ✅ User signup and login functionality
+- ✅ Password hashing with bcrypt
+- ✅ Employee CRUD operations
+- ✅ Input validation with express-validator
+- ✅ Proper HTTP status codes
+- ✅ **JWT authentication fully implemented (all employee routes protected)**
+- ✅ Modular structure (routes/controllers/models/middleware)
+- ✅ Docker and Docker Compose setup
+- ✅ Mongo Express for database visualization
+- ✅ Git version control ready
