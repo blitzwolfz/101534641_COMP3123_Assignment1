@@ -11,11 +11,13 @@ const {
   createEmployeeValidation, 
   updateEmployeeValidation 
 } = require('../middleware/employeeValidation');
+const verifyToken = require('../middleware/auth');
 
-router.get('/employees', getAllEmployees);
-router.post('/employees', createEmployeeValidation, createEmployee);
-router.get('/employees/:eid', getEmployeeById);
-router.put('/employees/:eid', updateEmployeeValidation, updateEmployee);
-router.delete('/employees', deleteEmployee);
+// All employee routes are now protected with JWT authentication
+router.get('/employees', verifyToken, getAllEmployees);
+router.post('/employees', verifyToken, createEmployeeValidation, createEmployee);
+router.get('/employees/:eid', verifyToken, getEmployeeById);
+router.put('/employees/:eid', verifyToken, updateEmployeeValidation, updateEmployee);
+router.delete('/employees', verifyToken, deleteEmployee);
 
 module.exports = router;
