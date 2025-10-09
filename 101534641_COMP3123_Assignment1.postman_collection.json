@@ -562,26 +562,50 @@
 			]
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost:3000",
-			"type": "string"
+			"value": "http://localhost:3000"
 		},
 		{
 			"key": "employee_id",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
 			"key": "user_id",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
 			"key": "jwt_token",
-			"value": "",
-			"type": "string"
+			"value": ""
+		},
+		{
+			"key": "local_url",
+			"value": ""
 		}
 	]
 }
