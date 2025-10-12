@@ -70,6 +70,15 @@ A RESTful API built with Node.js, Express, and MongoDB for user and employee man
 - Docker and Docker Compose
 - Git
 
+### Sample User
+```json
+{
+  "username": "johndoe2",
+  "email": "johndoe2@example.com",
+  "password": "password123"
+}
+```
+
 ### Option 1: Run with Docker
 
 1. Clone the repository:
