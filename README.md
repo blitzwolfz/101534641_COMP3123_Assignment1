@@ -1,4 +1,5 @@
 # 101534641_COMP3123_Assignment1
+# Samin Qureshi
 
 A RESTful API built with Node.js, Express, and MongoDB for user and employee management.
 
@@ -116,6 +117,10 @@ For development with auto-reload:
 ```bash
 npm run dev
 ```
+
+### Option 3: Test the API from Hosting
+
+To test the API live using this url `https://101534641comp3123assignment1-production.up.railway.app`
 
 ## 🔗 API Endpoints
 
@@ -417,14 +422,14 @@ Before submitting, ensure you have:
 - Email: johndoe@example.com  
 - Password: password123
 
-✅ **Notes/Comments**: Mention that JWT authentication is fully implemented
+✅ **Notes/Comments**: JWT authentication is fully implemented
 
 ## 📄 License
 
 This project is for educational purposes only.
 
 ## 👤 Author
-
+Name: Samin Qureshi
 Student Number: 101534641
 
 ## 📚 Assignment Requirements Met
