@@ -5,6 +5,7 @@ A RESTful API built with Node.js, Express, and MongoDB for user and employee man
 
 ## 👤 Student Information
 
+- **Student Name**: Samin Qureshi
 - **Student Number**: 101534641
 - **Course**: COMP 3123
 - **Assignment**: Assignment 1 (Backend, 10%)
@@ -69,7 +70,7 @@ A RESTful API built with Node.js, Express, and MongoDB for user and employee man
 - Docker and Docker Compose
 - Git
 
-### Option 1: Run with Docker (Recommended)
+### Option 1: Run with Docker
 
 1. Clone the repository:
 ```bash
@@ -118,7 +119,7 @@ For development with auto-reload:
 npm run dev
 ```
 
-### Option 3: Test the API from Hosting
+### Option 3: Test the API from Hosting (Recommended)
 
 To test the API live using this url `https://101534641comp3123assignment1-production.up.railway.app`
 
